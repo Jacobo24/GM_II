@@ -104,6 +104,17 @@ def chunk_with_overlap(paragraphs: list[str], max_chars: int, overlap: int) -> l
         for i in range(1, len(chunks)):
             prev = overlapped[-1]
             tail = prev[-overlap:] if len(prev) > overlap else prev
+            # intenta empezar el tail en un corte "limpio"
+            cut_candidates = [
+                tail.rfind("\n\n"),  # fin de párrafo
+                tail.rfind(". "),    # fin de frase
+                tail.rfind("! "),
+                tail.rfind("? "),
+                tail.rfind("\n"),    # fin de línea
+            ]
+            cut = max(cut_candidates)
+            if cut != -1 and cut + 2 < len(tail):
+                tail = tail[cut + 2 :].lstrip()  # +2 para saltar el separador (". ", "\n\n", etc.)
             merged = (tail + "\n\n" + chunks[i]).strip()
             overlapped.append(merged)
         chunks = overlapped
