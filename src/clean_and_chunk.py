@@ -168,8 +168,12 @@ def main():
             paras = split_paragraphs(cleaned)
             chunks = chunk_with_overlap(paras, max_chars=args.max_chars, overlap=args.overlap)
 
-            # filtra chunks cortos
-            chunks = [c for c in chunks if len(c) >= args.min_chars]
+            # filtra chunks cortos (umbral distinto según fuente)
+            min_chars = args.min_chars
+            if fuente == "wikipedia_bibliography":
+                min_chars = 80  # recomendado: 60–120. Yo empezaría por 80.
+
+            chunks = [c for c in chunks if len(c) >= min_chars]
             if not chunks:
                 skipped_empty += 1
                 continue
